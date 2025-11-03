@@ -1,44 +1,35 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Начало | Logistic Company</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f5f7fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            text-align: center;
-            background: white;
-            padding: 40px 60px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #1976d2;
-        }
-
-        p {
-            color: #444;
-            font-size: 1.1em;
-        }
-    </style>
+    <title>Logistic Company</title>
 </head>
 <body>
-<div class="container">
-    <h1>WELCOME TO Logistic Company!</h1>
-    <p>MAIN PAGE</p>
-    <p>EVERYTHING IS ALRIGHT! :D</p>
-</div>
+
+<h2>Welcome to Logistic Company</h2>
+
+<p>This is the main page of your web application.</p>
+
+<p>
+    <a href="${pageContext.request.contextPath}/register">Register</a> |
+    <a href="${pageContext.request.contextPath}/login">Login</a> |
+    <a href="${pageContext.request.contextPath}/logout">Logout</a>
+</p>
+
+<%
+    Object email = session.getAttribute("email");
+    Object role  = session.getAttribute("role");
+    if (email != null) {
+%>
+<p>You are signed in as <b><%= email %></b> (role: <%= role %>)</p>
+<%
+} else {
+%>
+<p>You are not signed in.</p>
+<%
+    }
+%>
+
 </body>
 </html>
