@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'war' // проектът ще бъде уеб приложение, което се деплойва като WAR файл (Tomcat)
 }
 
 group = 'org.informatics'
@@ -10,6 +11,20 @@ repositories {
 }
 
 dependencies {
+
+    // Jakarta Servlet API — осигурява класовете за Servlets (HttpServlet, HttpServletRequest и т.н.)
+    // Отбелязваме я като compileOnly, защото Tomcat вече я има - само компилираме срещу нея
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+    // JSTL (Jakarta Standard Tag Library) — нужна е за JSP (Java service pages) страниците
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1'
+
+    implementation 'com.mysql:mysql-connector-j:9.4.0'
+
+    // BCrypt — библиотека за безопасно хеширане и проверка на пароли
+    implementation 'org.mindrot:jbcrypt:0.4'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -17,4 +32,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
