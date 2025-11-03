@@ -1,7 +1,7 @@
 package org.informatics.logistic.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
@@ -10,27 +10,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 60)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 16)
+    @Column(nullable = false)
     private Role role;
 
     @Column(nullable = false)
     private boolean active = true;
 
-    @Column(nullable = false)
-    private Instant createdAt = Instant.now();
+    @Column(columnDefinition = "DATETIME", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() { return id; }
 
@@ -50,8 +50,22 @@ public class User {
     public void setRole(Role role) { this.role = role; }
 
     public boolean isActive() { return active; }
+    @Transient
+    public String getActiveDisplay() { return active ? "Active" : "Inactive"; }
     public void setActive(boolean active) { this.active = active; }
 
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + getId() +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", role=" + getRole() +
+                ", active=" + getActiveDisplay() +
+                '}';
+    }
 }
