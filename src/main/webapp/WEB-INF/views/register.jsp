@@ -25,8 +25,8 @@
     <label>Confirm:    <input name="confirm"  type="password" required></label><br>
     <label>Role:
         <select name="role" required>
-            <option value="CLIENT">CLIENT</option>
-            <option value="EMPLOYEE">EMPLOYEE</option>
+            <option value="CLIENT">Client</option>
+            <option value="EMPLOYEE">Employee</option>
         </select>
     </label><br>
     <button type="submit">Create account</button>
