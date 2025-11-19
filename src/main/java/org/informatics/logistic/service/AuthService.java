@@ -1,6 +1,6 @@
 package org.informatics.logistic.service;
 
-import org.informatics.logistic.data.UserRepository;
+import org.informatics.logistic.dao.UserRepository;
 import org.informatics.logistic.entity.Role;
 import org.informatics.logistic.entity.User;
 import org.mindrot.jbcrypt.BCrypt;

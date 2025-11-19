@@ -1,11 +1,5 @@
 package org.informatics;
 
-import org.informatics.logistic.data.UserRepository;
-import org.informatics.logistic.entity.Role;
-import org.informatics.logistic.entity.User;
-import org.informatics.logistic.service.AuthService;
-import org.mindrot.jbcrypt.BCrypt;
-
 public class Main {
     public static void main(String[] args) {
         var auth = new org.informatics.logistic.service.AuthService();

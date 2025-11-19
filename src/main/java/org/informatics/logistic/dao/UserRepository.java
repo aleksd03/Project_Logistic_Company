@@ -1,4 +1,4 @@
-package org.informatics.logistic.data;
+package org.informatics.logistic.dao;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
