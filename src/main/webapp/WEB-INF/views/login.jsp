@@ -13,9 +13,7 @@
 <h2>Login</h2>
 
 <% String err = (String) request.getAttribute("error");
-    String ok  = (String) request.getAttribute("success");
-    if (err != null) { %><p style="color:red;"><%= err %></p><% }
-    if (ok  != null) { %><p style="color:green;"><%= ok %></p><% } %>
+    if (err != null) { %><p style="color:red;"><%= err %></p><% } %>
 
 <form method="post" action="${pageContext.request.contextPath}/login">
     <label>Email:    <input name="email" type="email" required></label><br>
