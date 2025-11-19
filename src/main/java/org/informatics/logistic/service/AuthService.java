@@ -32,15 +32,15 @@ public class AuthService {
 
         String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
 
-        User u = new User();
-        u.setFirstName(firstName.trim());
-        u.setLastName(lastName.trim());
-        u.setEmail(email);
-        u.setPasswordHash(hash);
-        u.setRole(role);
-        users.save(u);
+        User user = new User();
+        user.setFirstName(firstName.trim());
+        user.setLastName(lastName.trim());
+        user.setEmail(email);
+        user.setPasswordHash(hash);
+        user.setRole(role);
+        users.save(user);
 
-        return u;
+        return user;
     }
 
     public Optional<User> login(String email, String rawPassword) {
@@ -50,12 +50,12 @@ public class AuthService {
         var opt = users.findByEmail(email);
         if (opt.isEmpty()) return Optional.empty();
 
-        var u = opt.get();
+        var user = opt.get();
 
-        if (!u.isActive()) return Optional.empty();
+        if (!user.isActive()) return Optional.empty();
 
-        boolean ok = BCrypt.checkpw(rawPassword, u.getPasswordHash());
-        return ok ? Optional.of(u) : Optional.empty();
+        boolean ok = BCrypt.checkpw(rawPassword, user.getPasswordHash());
+        return ok ? Optional.of(user) : Optional.empty();
     }
 
     private boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }

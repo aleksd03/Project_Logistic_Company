@@ -12,7 +12,7 @@ public class Main {
 
         auth.login("ivan123@asd.com", "ivan123456")
                 .ifPresentOrElse(
-                        u -> System.out.println("Login OK: " + u.getEmail() + " (" + u.getRole() + ")"),
+                        user -> System.out.println("Login OK: " + user.getEmail() + " (" + user.getRole() + ")"),
                         () -> System.out.println("Invalid email or password")
                 );
 
@@ -33,29 +33,29 @@ public class Main {
 //
 //            System.out.println("Successfully registered: " + newUser);
 //
-//        } catch (IllegalArgumentException e) {
-//            System.out.println("Registration failed: " + e.getMessage());
+//        } catch (IllegalArgumentException exception) {
+//            System.out.println("Registration failed: " + exception.getMessage());
 //        }
 
 
 
-//        UserRepository repo = new UserRepository();
+//        UserRepository repository = new UserRepository();
 //
 //        String email = "peter123@asd.com";
 //        String rawPassword = "peter123456";
 //        String hash = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
 //
-//        User u = new User();
-//        u.setFirstName("Peter");
-//        u.setLastName("Nicolov");
-//        u.setEmail(email);
-//        u.setPasswordHash(hash);
-//        u.setRole(Role.EMPLOYEE);
+//        User user = new User();
+//        user.setFirstName("Peter");
+//        user.setLastName("Nicolov");
+//        user.setEmail(email);
+//        user.setPasswordHash(hash);
+//        user.setRole(Role.EMPLOYEE);
 //
-//        repo.save(u);
+//        repository.save(user);
 //        System.out.println("Saved user: " + email);
 //
-//        repo.findByEmail(email).ifPresentOrElse(
+//        repository.findByEmail(email).ifPresentOrElse(
 //                found -> System.out.println("Found: " + found + " " + found.getLastName() + " (" + found.getRole() + ")"),
 //                () -> System.out.println("Not found: " + email)
 //        );

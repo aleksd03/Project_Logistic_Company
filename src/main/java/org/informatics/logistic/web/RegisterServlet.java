@@ -12,35 +12,35 @@ import java.io.IOException;
 public class RegisterServlet extends HttpServlet {
     private final AuthService auth = new AuthService();
 
-    @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+        request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
     }
 
-    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
 
-        String first = req.getParameter("firstName");
-        String last  = req.getParameter("lastName");
-        String email = req.getParameter("email");
-        String pass  = req.getParameter("password");
-        String conf  = req.getParameter("confirm");
-        String role  = req.getParameter("role");
+        String first = request.getParameter("firstName");
+        String last  = request.getParameter("lastName");
+        String email = request.getParameter("email");
+        String pass  = request.getParameter("password");
+        String conf  = request.getParameter("confirm");
+        String role  = request.getParameter("role");
 
         if (pass == null || !pass.equals(conf)) {
-            req.setAttribute("error", "Passwords do not match.");
-            req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+            request.setAttribute("error", "Passwords do not match.");
+            request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
             return;
         }
 
         try {
             auth.register(first, last, email, pass, Role.valueOf(role));
-            req.setAttribute("success", "Account created. Please sign in.");
-        } catch (IllegalArgumentException ex) {
-            req.setAttribute("error", ex.getMessage());
+            request.setAttribute("success", "Account created. Please sign in.");
+        } catch (IllegalArgumentException exception) {
+            request.setAttribute("error", exception.getMessage());
         }
 
-        req.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(req, resp);
+        request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
     }
 }

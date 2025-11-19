@@ -10,34 +10,34 @@ import org.informatics.logistic.service.AuthService;
 public class LoginServlet extends HttpServlet {
     private final AuthService auth = new AuthService();
 
-    @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    @Override protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
+        request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
     }
 
-    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    @Override protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
-        String email = req.getParameter("email");
-        String pass  = req.getParameter("password");
+        request.setCharacterEncoding("UTF-8");
+        String email = request.getParameter("email");
+        String pass  = request.getParameter("password");
 
         auth.login(email, pass).ifPresentOrElse(user -> {
-            HttpSession session = req.getSession(true);
+            HttpSession session = request.getSession(true);
             session.setAttribute("userId", user.getId());
             session.setAttribute("email",  user.getEmail());
             session.setAttribute("role",   user.getRole().name());
 
             try {
-                resp.sendRedirect(req.getContextPath() + "/");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                response.sendRedirect(request.getContextPath() + "/");
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
             }
         }, () -> {
             try {
-                req.setAttribute("error", "Invalid email or password.");
-                req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                request.setAttribute("error", "Invalid email or password.");
+                request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
+            } catch (Exception exception) {
+                throw new RuntimeException(exception);
             }
         });
     }
