@@ -24,4 +24,10 @@ public class UserDao {
             return q.uniqueResultOptional();
         }
     }
+
+    public Optional<User> findById(long id) {
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            return Optional.ofNullable(session.get(User.class, id));
+        }
+    }
 }

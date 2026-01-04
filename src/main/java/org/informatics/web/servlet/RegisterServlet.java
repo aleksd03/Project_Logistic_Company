@@ -4,12 +4,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import org.informatics.entity.Role;
+import org.informatics.entity.User;
 import org.informatics.service.AuthService;
 
 import java.io.IOException;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
+
     private final AuthService auth = new AuthService();
 
     @Override
@@ -21,28 +23,28 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-
-        String first = request.getParameter("firstName");
-        String last  = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String pass  = request.getParameter("password");
-        String conf  = request.getParameter("confirm");
-        String role  = request.getParameter("role");
-
-        if (pass == null || !pass.equals(conf)) {
-            request.setAttribute("error", "Passwords do not match.");
-            request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-            return;
-        }
 
         try {
-            auth.register(first, last, email, pass, Role.valueOf(role));
-            request.setAttribute("success", "Account created. Please sign in.");
-        } catch (IllegalArgumentException exception) {
-            request.setAttribute("error", exception.getMessage());
-        }
+            String firstName = request.getParameter("firstName");
+            String lastName  = request.getParameter("lastName");
+            String email     = request.getParameter("email");
+            String password  = request.getParameter("password");
+            String roleStr   = request.getParameter("role");
 
-        request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+            Role role = Role.valueOf(roleStr);
+
+            User u = auth.register(firstName, lastName, email, password, role);
+
+            // auto login after register
+            HttpSession session = request.getSession(true);
+            session.setAttribute("userId", u.getId());
+            session.setAttribute("email", u.getEmail());
+            session.setAttribute("role", u.getRole().name());
+
+            response.sendRedirect(request.getContextPath() + "/");
+        } catch (IllegalArgumentException ex) {
+            request.setAttribute("error", ex.getMessage());
+            request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+        }
     }
 }

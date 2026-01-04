@@ -3,11 +3,15 @@ package org.informatics.web.servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import java.io.IOException;
+import org.informatics.entity.User;
 import org.informatics.service.AuthService;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
+
     private final AuthService auth = new AuthService();
 
     @Override
@@ -19,29 +23,23 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
+
         String email = request.getParameter("email");
-        String pass  = request.getParameter("password");
+        String password = request.getParameter("password");
 
-        auth.login(email, pass).ifPresentOrElse(user -> {
-            HttpSession session = request.getSession(true);
-            session.setAttribute("userId", user.getId());
-            session.setAttribute("email",  user.getEmail());
-            session.setAttribute("role",   user.getRole().name());
+        Optional<User> u = auth.login(email, password);
 
-            try {
-                response.sendRedirect(request.getContextPath() + "/");
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-        }, () -> {
-            try {
-                request.setAttribute("error", "Invalid email or password.");
-                request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
-            } catch (Exception exception) {
-                throw new RuntimeException(exception);
-            }
-        });
+        if (u.isEmpty()) {
+            request.setAttribute("error", "Invalid email or password.");
+            request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
+            return;
+        }
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute("userId", u.get().getId());
+        session.setAttribute("email", u.get().getEmail());
+        session.setAttribute("role", u.get().getRole().name());
+
+        response.sendRedirect(request.getContextPath() + "/");
     }
 }
-
