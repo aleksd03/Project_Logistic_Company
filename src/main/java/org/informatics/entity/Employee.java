@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.informatics.entity.enums.EmployeeType;
 
 @Getter
 @Setter
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "employees")
 public class Employee extends BaseEntity {
+
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
@@ -24,4 +26,8 @@ public class Employee extends BaseEntity {
     @ManyToOne(optional = true)
     @JoinColumn(name = "office_id", nullable = true)
     private Office office;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "employee_type", nullable = true)
+    private EmployeeType employeeType;
 }

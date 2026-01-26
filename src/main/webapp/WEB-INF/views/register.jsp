@@ -55,10 +55,12 @@
                     <option value="EMPLOYEE">Служител</option>
                 </select>
 
-                <label class="checkbox-label">
-                    <input type="checkbox" id="isCompany" name="isCompany" value="true">
-                    <span>Регистрация като фирма</span>
-                </label>
+                <div id="companyCheckboxContainer" class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="isCompany" name="isCompany" value="true">
+                        <span>Регистрация като фирма</span>
+                    </label>
+                </div>
 
                 <div id="companyFields" class="company-fields">
                     <label for="companyName">Име на фирмата</label>
@@ -85,6 +87,7 @@
 </div>
 
 <script>
+    // Password validation
     document.querySelector('form').addEventListener('submit', function(e) {
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
@@ -95,16 +98,32 @@
         }
     });
 
+    // Show/hide company checkbox based on role
+    document.getElementById('role').addEventListener('change', function() {
+        const companyCheckboxContainer = document.getElementById('companyCheckboxContainer');
+        const isCompanyCheckbox = document.getElementById('isCompany');
+        const companyFields = document.getElementById('companyFields');
+        const companyNameInput = document.getElementById('companyName');
+
+        if (this.value === 'CLIENT') {
+            companyCheckboxContainer.style.display = 'block';
+        } else {
+            companyCheckboxContainer.style.display = 'none';
+            isCompanyCheckbox.checked = false;
+            companyFields.classList.remove('visible');
+            companyNameInput.value = '';
+        }
+    });
+
+    // Show/hide company fields based on checkbox
     document.getElementById('isCompany').addEventListener('change', function() {
         const companyFields = document.getElementById('companyFields');
         const companyNameInput = document.getElementById('companyName');
 
         if (this.checked) {
             companyFields.classList.add('visible');
-            companyNameInput.required = false;
         } else {
             companyFields.classList.remove('visible');
-            companyNameInput.required = false;
             companyNameInput.value = '';
         }
     });

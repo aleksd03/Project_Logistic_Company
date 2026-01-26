@@ -35,4 +35,21 @@ public class CompanyService {
     public java.util.List<Company> getAllCompanies() {
         return repo.findAll();
     }
+
+    public Company updateCompany(Company company) {
+        if (company == null) {
+            throw new IllegalArgumentException("Company cannot be null");
+        }
+        return repo.update(company);
+    }
+
+    public void deleteCompany(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Company ID cannot be null");
+        }
+        Company company = getCompanyById(id);
+        if (company != null) {
+            repo.delete(company);
+        }
+    }
 }

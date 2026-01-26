@@ -5,6 +5,8 @@ import org.informatics.entity.Company;
 import org.informatics.entity.Client;
 import org.informatics.entity.User;
 
+import java.util.List;
+
 public class ClientService {
     private final ClientDao repo = new ClientDao();
 
@@ -27,5 +29,9 @@ public class ClientService {
             throw new IllegalArgumentException("Client ID cannot be null");
         }
         return repo.findById(id);
+    }
+
+    public List<Client> getAllClients() {
+        return repo.findAll();
     }
 }

@@ -6,6 +6,8 @@ import org.informatics.entity.Company;
 import org.informatics.entity.Office;
 import org.informatics.entity.User;
 
+import java.util.List;
+
 public class EmployeeService {
     private final EmployeeDao repo = new EmployeeDao();
 
@@ -35,5 +37,9 @@ public class EmployeeService {
             throw new IllegalArgumentException("Employee ID cannot be null");
         }
         return repo.findById(id);
+    }
+
+    public List<Employee> getAllEmployees() {
+        return repo.findAll();
     }
 }

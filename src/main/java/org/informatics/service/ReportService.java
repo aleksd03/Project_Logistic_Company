@@ -6,10 +6,10 @@ import org.informatics.dao.ShipmentDao;
 import org.informatics.entity.Client;
 import org.informatics.entity.Employee;
 import org.informatics.entity.Shipment;
-import org.informatics.dao.*;
-import org.informatics.entity.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReportService {
 
@@ -30,19 +30,46 @@ public class ReportService {
     }
 
     public List<Shipment> shipmentsByEmployee(Long employeeId) {
-        return shipmentRepo.findByEmployee(employeeId);
+        return shipmentRepo.findByRegisteredBy(employeeId);
     }
 
-    public List<Shipment> shipmentsByClient(Long clientId) {
-        return shipmentRepo.findByClient(clientId);
+    public List<Shipment> shipmentsSentByClient(Long clientId) {
+        return shipmentRepo.findBySenderId(clientId);
+    }
+
+    public List<Shipment> shipmentsReceivedByClient(Long clientId) {
+        return shipmentRepo.findByReceiverId(clientId);
     }
 
     public List<Shipment> sentNotReceived() {
-        return shipmentRepo.findSentNotReceived();
+        return shipmentRepo.findUndelivered();
     }
 
-    public Double revenue() {
-        Double r = shipmentRepo.totalRevenue();
-        return r == null ? 0.0 : r;
+    public Double totalRevenue() {
+        List<Shipment> allShipments = shipmentRepo.findAll();
+        return allShipments.stream()
+                .mapToDouble(Shipment::getPrice)
+                .sum();
+    }
+
+    public Double revenueForPeriod(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Shipment> allShipments = shipmentRepo.findAll();
+        return allShipments.stream()
+                .filter(s -> s.getRegistrationDate().isAfter(startDate) &&
+                        s.getRegistrationDate().isBefore(endDate))
+                .mapToDouble(Shipment::getPrice)
+                .sum();
+    }
+
+    public int countShipmentsByEmployee(Long employeeId) {
+        return shipmentRepo.findByRegisteredBy(employeeId).size();
+    }
+
+    public int countShipmentsSentByClient(Long clientId) {
+        return shipmentRepo.findBySenderId(clientId).size();
+    }
+
+    public int countShipmentsReceivedByClient(Long clientId) {
+        return shipmentRepo.findByReceiverId(clientId).size();
     }
 }
