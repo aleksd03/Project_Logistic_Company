@@ -1,4 +1,4 @@
-package org.informatics.entity;
+package org.informatics.entity.enums;
 
 public enum Role {
     EMPLOYEE, CLIENT

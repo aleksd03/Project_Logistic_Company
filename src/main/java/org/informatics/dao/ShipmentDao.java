@@ -4,7 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.informatics.configuration.SessionFactoryUtil;
 import org.informatics.entity.Shipment;
-import org.informatics.entity.ShipmentStatus;
+import org.informatics.entity.enums.ShipmentStatus;
 
 import java.util.List;
 
@@ -87,6 +87,34 @@ public class ShipmentDao {
                     Double.class
             ).setParameter("st", ShipmentStatus.RECEIVED)
              .uniqueResult();
+        }
+    }
+
+    public List<Shipment> findBySenderId(Long senderId) {
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "from Shipment s where s.sender.id = :senderId order by s.id desc",
+                            Shipment.class)
+                    .setParameter("senderId", senderId)
+                    .list();
+        } catch (Exception e) {
+            System.err.println("Error finding shipments by sender: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    public List<Shipment> findByReceiverId(Long receiverId) {
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "from Shipment s where s.receiver.id = :receiverId order by s.id desc",
+                            Shipment.class)
+                    .setParameter("receiverId", receiverId)
+                    .list();
+        } catch (Exception e) {
+            System.err.println("Error finding shipments by receiver: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
         }
     }
 }

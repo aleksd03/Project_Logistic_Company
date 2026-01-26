@@ -2,6 +2,8 @@ package org.informatics.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.informatics.entity.enums.Role;
+
 import java.time.LocalDateTime;
 
 @Getter

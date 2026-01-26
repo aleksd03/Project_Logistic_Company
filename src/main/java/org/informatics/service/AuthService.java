@@ -1,7 +1,7 @@
 package org.informatics.service;
 
 import org.informatics.dao.UserDao;
-import org.informatics.entity.Role;
+import org.informatics.entity.enums.Role;
 import org.informatics.entity.User;
 import org.mindrot.jbcrypt.BCrypt;
 

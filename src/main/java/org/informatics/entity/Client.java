@@ -18,7 +18,7 @@ public class Client extends BaseEntity {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "company_id", nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 }

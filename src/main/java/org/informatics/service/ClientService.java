@@ -14,4 +14,18 @@ public class ClientService {
         c.setCompany(company);
         repo.save(c);
     }
+
+    public Client getClientByUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        return repo.findByUserId(userId);
+    }
+
+    public Client getClientById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Client ID cannot be null");
+        }
+        return repo.findById(id);
+    }
 }

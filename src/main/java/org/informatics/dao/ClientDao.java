@@ -44,5 +44,19 @@ public class ClientDao {
             return session.createQuery("from Client", Client.class).list();
         }
     }
+
+    public Client findByUserId(Long userId) {
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            return session.createQuery(
+                            "from Client c where c.user.id = :userId",
+                            Client.class)
+                    .setParameter("userId", userId)
+                    .uniqueResult();
+        } catch (Exception e) {
+            System.err.println("Error finding client by user ID: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
 

@@ -1,44 +1,70 @@
 package org.informatics.web.filter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.HttpFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @WebFilter("/*")
-public class AuthFilter extends HttpFilter {
+public class AuthFilter implements Filter {
+    private static final List<String> PUBLIC_URLS = Arrays.asList(
+            "/login",
+            "/register",
+            "/assets"
+    );
 
     @Override
-    protected void doFilter(HttpServletRequest request,
-                            HttpServletResponse response,
-                            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
-        String path = request.getRequestURI().substring(request.getContextPath().length());
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
 
-        // Public
-        if (path.equals("/") ||
-                path.equals("/index.jsp") ||
-                path.equals("/login") ||
-                path.equals("/register") ||
-                path.equals("/logout") ||
-                path.startsWith("/assets/")) {
+        String uri = req.getRequestURI();
+        String contextPath = req.getContextPath();
+        String path = uri.substring(contextPath.length());
 
+        System.out.println("=== AUTH FILTER ===");
+        System.out.println("Path: " + path);
+
+        if (path.equals("/") || path.isEmpty()) {
+            System.out.println("Home page - allowing");
             chain.doFilter(request, response);
             return;
         }
 
-        var session = request.getSession(false);
-        boolean signedIn = session != null && session.getAttribute("userId") != null;
+        boolean isPublic = PUBLIC_URLS.stream().anyMatch(path::startsWith);
 
-        if (!signedIn) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        if (isPublic) {
+            System.out.println("Public URL - allowing");
+            chain.doFilter(request, response);
             return;
         }
 
+        HttpSession session = req.getSession(false);
+
+        if (session == null) {
+            System.out.println("No session - redirecting to login");
+            res.sendRedirect(contextPath + "/login");
+            return;
+        }
+
+        String userEmail = (String) session.getAttribute("userEmail");
+        Object userRole = session.getAttribute("userRole");
+
+        System.out.println("Session userEmail: " + userEmail);
+        System.out.println("Session userRole: " + userRole);
+
+        if (userEmail == null || userRole == null) {
+            System.out.println("Session invalid - redirecting to login");
+            session.invalidate();
+            res.sendRedirect(contextPath + "/login");
+            return;
+        }
+
+        System.out.println("Authenticated - allowing");
         chain.doFilter(request, response);
     }
 }

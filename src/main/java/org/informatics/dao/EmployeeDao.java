@@ -10,26 +10,33 @@ import java.util.List;
 public class EmployeeDao {
 
     public void save(Employee employee) {
+        Transaction tx = null;
         try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             session.persist(employee);
             tx.commit();
+            System.out.println("Employee saved successfully with ID: " + employee.getId());
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            System.err.println("ERROR saving employee: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Could not save employee", e);
         }
     }
 
     public void update(Employee employee) {
+        Transaction tx = null;
         try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
+            tx = session.beginTransaction();
             session.merge(employee);
             tx.commit();
-        }
-    }
-
-    public void delete(Employee employee) {
-        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            session.remove(employee);
-            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw new RuntimeException("Could not update employee", e);
         }
     }
 
@@ -39,20 +46,36 @@ public class EmployeeDao {
         }
     }
 
-    public List<Employee> findAll() {
-        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Employee", Employee.class).list();
-        }
-    }
-
     public Employee findByUserId(Long userId) {
         try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
             return session.createQuery(
-                    "from Employee e where e.user.id = :uid",
-                    Employee.class
-            ).setParameter("uid", userId)
-             .uniqueResult();
+                            "FROM Employee e WHERE e.user.id = :userId",
+                            Employee.class)
+                    .setParameter("userId", userId)
+                    .uniqueResult();
+        } catch (Exception e) {
+            System.err.println("Error finding employee by user ID: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Employee> findAll() {
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Employee", Employee.class).list();
+        }
+    }
+
+    public void delete(Employee employee) {
+        Transaction tx = null;
+        try (Session session = SessionFactoryUtil.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.remove(employee);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw new RuntimeException("Could not delete employee", e);
         }
     }
 }
-

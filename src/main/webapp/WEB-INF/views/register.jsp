@@ -4,191 +4,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация - ALVAS Logistics</title>
+    <title>Регистрация</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
-    <style>
-        .password-requirements {
-            background: var(--bg-color);
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-        }
-        .password-requirements ul {
-            margin: 0.5rem 0 0 1.5rem;
-        }
-        .password-requirements li {
-            color: var(--text-muted);
-            margin: 0.25rem 0;
-        }
-        .requirement-met {
-            color: var(--success-color) !important;
-        }
-        .password-match-indicator {
-            font-size: 0.875rem;
-            margin-top: -0.5rem;
-            margin-bottom: 1rem;
-        }
-        .match-success {
-            color: var(--success-color);
-        }
-        .match-error {
-            color: var(--danger-color);
-        }
-    </style>
 </head>
 <body>
-<div class="auth-container">
-    <div class="auth-card fade-in">
-        <div class="auth-header">
-            <h1 style="border: none;">📦 ALVAS Logistics</h1>
-            <h2>Регистрация</h2>
-            <p>Създайте своя акаунт в логистичната система.</p>
-        </div>
-
-        <% String error = (String) request.getAttribute("error");
-            if (error != null) { %>
-        <div class="alert alert-error">
-            ⚠️ <%= error %>
-        </div>
-        <% } %>
-
-        <form method="post" action="${pageContext.request.contextPath}/register" id="registerForm">
-            <label for="firstName">
-                Име
-                <input
-                        type="text"
-                        id="firstName"
-                        name="firstName"
-                        placeholder="Вашето име"
-                        required
-                        autofocus>
-            </label>
-
-            <label for="lastName">
-                Фамилия
-                <input
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        placeholder="Вашата фамилия"
-                        required>
-            </label>
-
-            <label for="email">
-                Email адрес
-                <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="vash@email.com"
-                        required>
-            </label>
-
-            <div class="password-requirements">
-                <strong>Изисквания за паролата:</strong>
+<div class="container">
+    <header>
+        <div class="header-content">
+            <a href="${pageContext.request.contextPath}/" class="logo">ALVAS Logistics</a>
+            <nav>
                 <ul>
-                    <li id="req-length">Минимум 8 символа</li>
+                    <li><a href="${pageContext.request.contextPath}/">Начало</a></li>
+                    <li><a href="${pageContext.request.contextPath}/login">Вход</a></li>
+                    <li><a href="${pageContext.request.contextPath}/register">Регистрация</a></li>
                 </ul>
-            </div>
+            </nav>
+        </div>
+    </header>
 
-            <label for="password">
-                Парола
-                <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Минимум 8 символа"
-                        required
-                        minlength="8">
-            </label>
+    <main>
+        <div class="auth-form-container">
+            <h2>Регистрация</h2>
+            <p>Създайте нов акаунт в системата</p>
 
-            <label for="confirm">
-                Потвърдете паролата
-                <input
-                        type="password"
-                        id="confirm"
-                        name="confirm"
-                        placeholder="Въведете отново паролата"
-                        required>
-            </label>
+            <% String error = (String) request.getAttribute("error"); %>
+            <% if (error != null) { %>
+            <div class="alert alert-error"><%= error %></div>
+            <% } %>
 
-            <div id="passwordMatch" class="password-match-indicator"></div>
+            <form method="post" action="${pageContext.request.contextPath}/register">
+                <label for="firstName">Име *</label>
+                <input type="text" id="firstName" name="firstName" required>
 
-            <label for="role">
-                Роля
+                <label for="lastName">Фамилия *</label>
+                <input type="text" id="lastName" name="lastName" required>
+
+                <label for="email">Имейл *</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">Парола *</label>
+                <input type="password" id="password" name="password" required minlength="8">
+
+                <label for="confirmPassword">Потвърди парола *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8">
+
+                <label for="role">Роля *</label>
                 <select id="role" name="role" required>
-                    <option value="">-- Изберете роля --</option>
+                    <option value="">Избери роля</option>
                     <option value="CLIENT">Клиент</option>
                     <option value="EMPLOYEE">Служител</option>
                 </select>
-            </label>
 
-            <button type="submit" class="btn-primary" id="submitBtn">
-                Регистрирай се
-            </button>
-        </form>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="isCompany" name="isCompany" value="true">
+                    <span>Регистрация като фирма</span>
+                </label>
 
-        <div class="auth-footer">
-            <p>Вече имате акаунт?</p>
-            <a href="${pageContext.request.contextPath}/login" class="btn-outline">
-                Влезте
-            </a>
+                <div id="companyFields" class="company-fields">
+                    <label for="companyName">Име на фирмата</label>
+                    <input type="text" id="companyName" name="companyName"
+                           placeholder="Въведете име на фирмата">
+                    <small>
+                        💡 Ако оставите празно, ще бъде създадена фирма с името: "Вашето име - Фирма"
+                    </small>
+                </div>
+
+                <button type="submit">Регистрирай се</button>
+
+                <div class="text-center">
+                    <p>Вече имате акаунт?</p>
+                    <a href="${pageContext.request.contextPath}/login" class="btn-outline">Влезте</a>
+                </div>
+            </form>
         </div>
-    </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
+    </footer>
 </div>
 
 <script>
-    // Password validation and matching
-    const password = document.getElementById('password');
-    const confirm = document.getElementById('confirm');
-    const form = document.getElementById('registerForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const matchIndicator = document.getElementById('passwordMatch');
-    const reqLength = document.getElementById('req-length');
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
 
-    // Check password requirements
-    password.addEventListener('input', function() {
-        if (password.value.length >= 8) {
-            reqLength.classList.add('requirement-met');
-        } else {
-            reqLength.classList.remove('requirement-met');
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Паролите не съвпадат!');
         }
-        checkPasswordMatch();
     });
 
-    // Check password match
-    confirm.addEventListener('input', checkPasswordMatch);
+    document.getElementById('isCompany').addEventListener('change', function() {
+        const companyFields = document.getElementById('companyFields');
+        const companyNameInput = document.getElementById('companyName');
 
-    function checkPasswordMatch() {
-        if (confirm.value === '') {
-            matchIndicator.textContent = '';
-            return;
-        }
-
-        if (password.value === confirm.value) {
-            matchIndicator.textContent = '✓ Паролите съвпадат';
-            matchIndicator.className = 'password-match-indicator match-success';
+        if (this.checked) {
+            companyFields.classList.add('visible');
+            companyNameInput.required = false;
         } else {
-            matchIndicator.textContent = '✗ Паролите не съвпадат';
-            matchIndicator.className = 'password-match-indicator match-error';
-        }
-    }
-
-    // Form submission validation
-    form.addEventListener('submit', function(e) {
-        if (password.value !== confirm.value) {
-            e.preventDefault();
-            alert('Паролите не съвпадат! Моля, проверете отново.');
-            confirm.focus();
-            return false;
-        }
-
-        if (password.value.length < 8) {
-            e.preventDefault();
-            alert('Паролата трябва да бъде минимум 8 символа!');
-            password.focus();
-            return false;
+            companyFields.classList.remove('visible');
+            companyNameInput.required = false;
+            companyNameInput.value = '';
         }
     });
 </script>

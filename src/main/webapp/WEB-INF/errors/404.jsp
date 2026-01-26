@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" isErrorPage="true" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="bg">
 <head>
@@ -8,33 +8,34 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
 <body>
-<div class="auth-container">
-    <div class="auth-card fade-in">
-        <div class="auth-header">
-            <h1 style="border: none; color: var(--warning-color); font-size: 5rem;">404</h1>
-            <h2>Страницата не е намерена</h2>
-            <p>Търсената от вас страница не съществува или е била преместена.</p>
+<div class="container error-container">
+    <main>
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Страницата не е намерена</h2>
+
+        <div class="error-message">
+            ✗ Съжаляваме, но търсената от вас страница не съществува!
         </div>
 
-        <div class="alert alert-warning">
-            ⚠️ URL адресът, който търсите, не е намерен в нашата система.
-        </div>
-
-        <div class="card-body">
-            <p><strong>Какво можете да направите:</strong></p>
-            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
-                <li>Проверете URL адреса за грешки</li>
-                <li>Използвайте бутона по-долу за връщане към началото</li>
-                <li>Свържете се с администратор, ако проблемът продължава</li>
-            </ul>
-        </div>
-
-        <div class="auth-footer">
-            <a href="${pageContext.request.contextPath}/" class="btn-primary">
-                ← Към началото
+        <div class="error-actions">
+            <a href="${pageContext.request.contextPath}/" class="btn-back">
+                Към началото
             </a>
         </div>
-    </div>
+
+        <div class="error-help">
+            <h3>Какво можете да направите:</h3>
+            <ul>
+                <li>Проверете дали URL адресът е написан правилно</li>
+                <li>Използвайте навигацията, за да намерите търсеното</li>
+                <li>Върнете се към началната страница</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
+    </footer>
 </div>
 </body>
 </html>
