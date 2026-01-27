@@ -2,18 +2,16 @@ package org.informatics.web.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
+import org.informatics.entity.Employee;
 import org.informatics.entity.Office;
 import org.informatics.entity.Shipment;
 import org.informatics.entity.enums.Role;
+import org.informatics.service.EmployeeService;
 import org.informatics.service.OfficeService;
 import org.informatics.service.ShipmentService;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @WebServlet("/employee-shipments")
@@ -21,6 +19,7 @@ public class EmployeeShipmentsServlet extends HttpServlet {
 
     private final ShipmentService shipmentService = new ShipmentService();
     private final OfficeService officeService = new OfficeService();
+    private final EmployeeService employeeService = new EmployeeService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,6 +34,7 @@ public class EmployeeShipmentsServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
+        // DELETE ACTION
         if ("delete".equals(action)) {
             try {
                 Long id = Long.parseLong(request.getParameter("id"));
@@ -42,24 +42,40 @@ public class EmployeeShipmentsServlet extends HttpServlet {
 
                 shipmentService.deleteShipment(id);
 
-                String successMsg = java.net.URLEncoder.encode("Пратката е изтрита успешно!", StandardCharsets.UTF_8);
+                String successMsg = java.net.URLEncoder.encode("Пратката е изтрита успешно!", "UTF-8");
                 response.sendRedirect(request.getContextPath() + "/employee-shipments?success=" + successMsg);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
                 System.err.println("❌ Error deleting shipment: " + e.getMessage());
-                String errorMsg = java.net.URLEncoder.encode("Грешка при изтриване: " + e.getMessage(), StandardCharsets.UTF_8);
+                String errorMsg = java.net.URLEncoder.encode("Грешка при изтриване: " + e.getMessage(), "UTF-8");
                 response.sendRedirect(request.getContextPath() + "/employee-shipments?error=" + errorMsg);
                 return;
             }
         }
 
+        // LIST ALL (with optional filter)
         try {
-            List<Shipment> shipments = shipmentService.getAllShipments();
+            String filterEmployeeIdStr = request.getParameter("filterEmployeeId");
+            List<Shipment> shipments;
+
+            if (filterEmployeeIdStr != null && !filterEmployeeIdStr.isEmpty() && !"all".equals(filterEmployeeIdStr)) {
+                // FILTER BY EMPLOYEE
+                Long filterEmployeeId = Long.parseLong(filterEmployeeIdStr);
+                shipments = shipmentService.getShipmentsByEmployee(filterEmployeeId);
+                System.out.println("📊 Filtering shipments by employee ID: " + filterEmployeeId);
+            } else {
+                // ALL SHIPMENTS
+                shipments = shipmentService.getAllShipments();
+            }
+
             List<Office> offices = officeService.getAllOffices();
+            List<Employee> employees = employeeService.getAllEmployees();
 
             request.setAttribute("shipments", shipments);
             request.setAttribute("offices", offices);
+            request.setAttribute("employees", employees);
+            request.setAttribute("selectedEmployeeId", filterEmployeeIdStr);
 
             request.getRequestDispatcher("/WEB-INF/views/employee-shipments.jsp").forward(request, response);
         } catch (Exception e) {
@@ -104,7 +120,7 @@ public class EmployeeShipmentsServlet extends HttpServlet {
 
                 shipmentService.updateShipment(id, weight, deliveryToOffice, deliveryOffice, deliveryAddress);
 
-                String successMsg = java.net.URLEncoder.encode("Пратката е актуализирана успешно!", StandardCharsets.UTF_8);
+                String successMsg = java.net.URLEncoder.encode("Пратката е актуализирана успешно!", "UTF-8");
                 response.sendRedirect(request.getContextPath() + "/employee-shipments?success=" + successMsg);
 
             } else if ("markReceived".equals(action)) {
@@ -112,13 +128,13 @@ public class EmployeeShipmentsServlet extends HttpServlet {
 
                 shipmentService.markAsReceived(id);
 
-                String successMsg = java.net.URLEncoder.encode("Пратката е маркирана като получена!", StandardCharsets.UTF_8);
+                String successMsg = java.net.URLEncoder.encode("Пратката е маркирана като получена!", "UTF-8");
                 response.sendRedirect(request.getContextPath() + "/employee-shipments?success=" + successMsg);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            String errorMsg = java.net.URLEncoder.encode("Грешка: " + e.getMessage(), StandardCharsets.UTF_8);
+            String errorMsg = java.net.URLEncoder.encode("Грешка: " + e.getMessage(), "UTF-8");
             response.sendRedirect(request.getContextPath() + "/employee-shipments?error=" + errorMsg);
         }
     }

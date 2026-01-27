@@ -1477,6 +1477,8 @@ table td .action-buttons form {
     border: 1px solid #ffb74d;
 }
 
+
+
 /* === RESPONSIVE FIXES === */
 @media (max-width: 768px) {
     .page-header {

@@ -2,6 +2,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.informatics.entity.Shipment" %>
 <%@ page import="org.informatics.entity.Office" %>
+<%@ page import="org.informatics.entity.Employee" %>
 <%@ page import="org.informatics.entity.enums.Role" %>
 <%@ page import="org.informatics.entity.enums.ShipmentStatus" %>
 <%
@@ -12,6 +13,8 @@
 
     List<Shipment> shipments = (List<Shipment>) request.getAttribute("shipments");
     List<Office> offices = (List<Office>) request.getAttribute("offices");
+    List<Employee> employees = (List<Employee>) request.getAttribute("employees");
+    String selectedEmployeeId = (String) request.getAttribute("selectedEmployeeId");
     String success = request.getParameter("success");
     String error = (String) request.getAttribute("error");
 %>
@@ -59,6 +62,43 @@
         <% } %>
 
         <div class="card">
+            <!-- FILTER INSIDE TABLE CARD -->
+            <div style="padding: 0.75rem 1rem; border-bottom: 2px solid #e0e0e0; background: #f8f9fa;">
+                <form method="get" action="${pageContext.request.contextPath}/employee-shipments" style="display: grid; grid-template-columns: auto 1fr auto; gap: 0.75rem; align-items: center;">
+                    <label for="filterEmployee" style="font-weight: 500; color: #333; display: flex; align-items: center; gap: 0.4rem; margin: 0; font-size: 0.95rem;">
+                        🔍 <span>Филтрирай:</span>
+                    </label>
+
+                    <select id="filterEmployee" name="filterEmployeeId" onchange="this.form.submit()" style="width: 320px; justify-self: center; padding: 0.45rem 0.7rem; border: 1px solid #d0d0d0; border-radius: 5px; font-size: 0.9rem; background: white;">
+                        <option value="all">Всички служители</option>
+                        <% if (employees != null) {
+                            for (Employee emp : employees) {
+                                String empName = emp.getUser() != null ? emp.getUser().getFirstName() + " " + emp.getUser().getLastName() : "N/A";
+                                String empEmoji = "";
+                                if (emp.getEmployeeType() != null) {
+                                    empEmoji = emp.getEmployeeType().toString().equals("COURIER") ? "🚚 " : "🏢 ";
+                                }
+                                boolean isSelected = selectedEmployeeId != null && selectedEmployeeId.equals(String.valueOf(emp.getId()));
+                        %>
+                        <option value="<%= emp.getId() %>" <%= isSelected ? "selected" : "" %>><%= empEmoji + empName %></option>
+                        <%  }
+                        } %>
+                    </select>
+
+                    <div style="display: flex; gap: 0.5rem; align-items: center; justify-self: end;">
+                        <% if (selectedEmployeeId != null && !"all".equals(selectedEmployeeId)) { %>
+                        <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/employee-shipments'" class="btn btn-outline" style="padding: 0.45rem 0.8rem; font-size: 0.85rem;">
+                            ✕ Изчисти
+                        </button>
+                        <% } %>
+
+                        <div style="padding: 0.35rem 0.7rem; background: white; border: 1px solid #d0d0d0; border-radius: 5px; color: #555; font-size: 0.9rem; white-space: nowrap;">
+                            📊 <strong><%= shipments != null ? shipments.size() : 0 %></strong> <%= (shipments != null && shipments.size() == 1) ? "пратка" : "пратки" %>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <div class="table-container">
                 <table>
                     <thead>
@@ -112,7 +152,7 @@
                             <div class="action-buttons">
                                 <button onclick="openEditModal(<%= s.getId() %>, <%= s.getWeight() %>, '<%= s.getDeliveryToOffice() %>', <%= s.getDeliveryOffice() != null ? s.getDeliveryOffice().getId() : "null" %>, '<%= s.getDeliveryAddress() != null ? s.getDeliveryAddress().replace("'", "\\'") : "" %>')"
                                         class="btn btn-primary">
-                                    🖊️ Редактирай
+                                    🖊️ Редактирај
                                 </button>
 
                                 <% if (s.getStatus() == ShipmentStatus.SENT) { %>
