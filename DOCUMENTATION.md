@@ -82,11 +82,12 @@ The system implements the following functional requirements:
 - ✅ All company employees
 - ✅ All company clients
 - ✅ All registered shipments
-- ✅ Shipments by employee
+- ✅ Shipments by employee (filtering)
 - ✅ Sent but not received shipments
 - ✅ Shipments sent by a specific client
 - ✅ Shipments received by a specific client
-- ✅ Total company revenue
+- ✅ Total company revenue for selected period
+- ✅ Monthly statistics (current month)
 
 ### 3.5. User Permissions
 - ✅ Employees have access to all functionalities
@@ -270,11 +271,49 @@ These functionalities are accessible only to employees and are implemented by yo
     1. **All Employees** - List of all company employees
     2. **All Clients** - List of all clients
     3. **All Shipments** - Complete list of registered shipments
-    4. **Shipments by Employee** - Filtered shipments by employee
-    5. **Sent but Not Received** - Shipments with SENT status
-    6. **Shipments by Client (sent)** - Shipments sent by specific client
-    7. **Shipments by Client (received)** - Shipments received by specific client
-    8. **Revenue** - Total revenue from received shipments
+    4. **Shipments by Employee** - Filtered shipments by registering employee
+    5. **Undelivered Shipments** - Shipments with SENT status, shows days in transit
+    6. **Monthly Statistics** - Detailed statistics for current month
+    7. **Revenue Report** - Revenue for selected period with date filtering
+
+#### Filter Shipments by Employee (`/employee-shipments?filterEmployeeId=X`)
+- **Access:** Employees only
+- **Description:** Allows filtering of shipments by the employee who registered them
+- **Functionality:**
+    - Dropdown menu with list of all employees
+    - Auto-submit on change
+    - Display count of filtered shipments
+    - Clear filter button
+
+#### Undelivered Shipments (`/undelivered-shipments`)
+- **Access:** Employees only
+- **Description:** Shows all shipments with SENT status
+- **Special Features:**
+    - Calculate days in transit
+    - Color indicators (🟢 0-2 days, 🟠 3-5 days, 🔴 6+ days)
+    - Warning statistics for pending shipments
+
+#### Revenue Report (`/revenue-report`)
+- **Access:** Employees only
+- **Description:** Generates financial report for selected period
+- **Functionality:**
+    - Select start and end date
+    - Calculate total revenue
+    - Show shipment count
+    - Average price per shipment
+    - Detailed table with all shipments for the period
+
+#### Monthly Statistics (`/monthly-stats`)
+- **Access:** Employees only
+- **Description:** Automatic statistics for current month
+- **Displays:**
+    - Total shipments for the month
+    - Sent vs received shipments
+    - Total revenue for the month
+    - Average price per shipment
+    - Percentage of delivered shipments
+    - Number of active clients
+    - Table with all shipments for the month
 
 ---
 

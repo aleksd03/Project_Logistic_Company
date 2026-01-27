@@ -1,0 +1,202 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.informatics.entity.Shipment" %>
+<%@ page import="org.informatics.entity.enums.Role" %>
+<%@ page import="org.informatics.entity.enums.ShipmentStatus" %>
+<%
+  String userEmail = (String) session.getAttribute("userEmail");
+  String firstName = (String) session.getAttribute("firstName");
+  String lastName = (String) session.getAttribute("lastName");
+  Role userRole = (Role) session.getAttribute("userRole");
+
+  List<Shipment> shipments = (List<Shipment>) request.getAttribute("shipments");
+  Double totalRevenue = (Double) request.getAttribute("totalRevenue");
+  String startDate = (String) request.getAttribute("startDate");
+  String endDate = (String) request.getAttribute("endDate");
+  String success = request.getParameter("success");
+  String error = (String) request.getAttribute("error");
+%>
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Справка за приходи - ALVAS Logistics</title>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-content">
+      <a href="${pageContext.request.contextPath}/" class="logo">ALVAS Logistics</a>
+      <nav>
+        <ul>
+          <li><a href="${pageContext.request.contextPath}/">Начало</a></li>
+          <li><a href="${pageContext.request.contextPath}/employee-shipments">Пратки</a></li>
+          <li>
+            <div class="user-info">
+              👤 <%= firstName + " " + lastName %>
+              <span class="user-role">СЛУЖИТЕЛ</span>
+            </div>
+          </li>
+          <li><a href="${pageContext.request.contextPath}/logout">Изход</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <h1>💰 Справка за приходи</h1>
+      <p>Изчисляване на приходи на компанията за определен период от време</p>
+    </div>
+
+    <% if (success != null) { %>
+    <div class="alert alert-success"><%= success %></div>
+    <% } %>
+
+    <% if (error != null) { %>
+    <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <!-- DATE FILTER CARD -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 2px solid #e0e0e0; background: #f8f9fa;">
+        <h3 style="margin: 0 0 0.75rem 0; font-size: 1rem; color: #333; font-weight: 600;">📅 Изберете период</h3>
+
+        <form method="get" action="${pageContext.request.contextPath}/revenue-report">
+          <div style="display: flex; gap: 1rem;">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <label for="startDate" style="display: block; margin-bottom: 0.4rem; font-weight: 500; color: #555; font-size: 0.9rem;">Начална дата *</label>
+              <input type="date" id="startDate" name="startDate" value="<%= startDate != null ? startDate : "" %>" required
+                     style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d0d0d0; border-radius: 5px; font-size: 0.9rem; height: 38px;">
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column;">
+              <label for="endDate" style="display: block; margin-bottom: 0.4rem; font-weight: 500; color: #555; font-size: 0.9rem;">Крайна дата *</label>
+              <input type="date" id="endDate" name="endDate" value="<%= endDate != null ? endDate : "" %>" required
+                     style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d0d0d0; border-radius: 5px; font-size: 0.9rem; height: 38px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; justify-content: flex-end;">
+              <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.25rem; white-space: nowrap; height: 38px; line-height: 1;">
+                📊 Генерирай справка
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <% if (totalRevenue != null) { %>
+    <!-- REVENUE SUMMARY -->
+    <div class="card revenue-summary-card">
+      <div class="revenue-summary-grid">
+        <div class="revenue-summary-item">
+          <div class="revenue-summary-label">Общо приходи</div>
+          <div class="revenue-summary-value green">
+            <%= String.format("%.2f", totalRevenue) %>€
+          </div>
+        </div>
+
+        <div class="revenue-summary-item">
+          <div class="revenue-summary-label">Брой пратки</div>
+          <div class="revenue-summary-value dark">
+            <%= shipments != null ? shipments.size() : 0 %>
+          </div>
+        </div>
+
+        <div class="revenue-summary-item">
+          <div class="revenue-summary-label">Средна цена</div>
+          <div class="revenue-summary-value blue">
+            <% if (shipments != null && !shipments.isEmpty()) { %>
+            <%= String.format("%.2f", totalRevenue / shipments.size()) %>€
+            <% } else { %>
+            0.00€
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHIPMENTS TABLE -->
+    <% if (shipments != null && !shipments.isEmpty()) { %>
+    <div class="card">
+      <div style="padding: 0.75rem 1rem; border-bottom: 2px solid #e0e0e0; background: #f8f9fa;">
+        <strong style="color: #333;">📋 Детайли на пратките за периода</strong>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Подател</th>
+            <th>Получател</th>
+            <th>Тегло</th>
+            <th>Цена</th>
+            <th>Статус</th>
+            <th>Дата</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% for (Shipment s : shipments) { %>
+          <tr>
+            <td><%= s.getId() %></td>
+            <td>
+              <%= s.getSender() != null && s.getSender().getUser() != null
+                      ? s.getSender().getUser().getFirstName() + " " + s.getSender().getUser().getLastName()
+                      : "N/A" %>
+            </td>
+            <td>
+              <%= s.getReceiver() != null && s.getReceiver().getUser() != null
+                      ? s.getReceiver().getUser().getFirstName() + " " + s.getReceiver().getUser().getLastName()
+                      : "N/A" %>
+            </td>
+            <td><%= String.format("%.2f", s.getWeight()) %> kg</td>
+            <td style="font-weight: bold; color: #28a745;"><%= String.format("%.2f", s.getPrice()) %>€</td>
+            <td>
+              <% if (s.getStatus() == ShipmentStatus.SENT) { %>
+              <span class="status status-sent">📦 Изпратена</span>
+              <% } else if (s.getStatus() == ShipmentStatus.RECEIVED) { %>
+              <span class="status status-received">✅ Получена</span>
+              <% } %>
+            </td>
+            <td><%= s.getRegistrationDate().toString().substring(0, 16).replace("T", " ") %></td>
+          </tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } else { %>
+    <div class="card">
+      <div style="padding: 2rem; text-align: center; color: #666;">
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">📭 Няма пратки за избрания период</p>
+        <p>Изберете друг период за да видите резултати.</p>
+      </div>
+    </div>
+    <% } %>
+    <% } else { %>
+    <!-- NO RESULTS YET -->
+    <div class="card">
+      <div style="padding: 3rem; text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+        <h3 style="color: #666; margin-bottom: 0.5rem;">Изберете период за генериране на справка</h3>
+        <p style="color: #999;">Въведете начална и крайна дата за да видите приходите</p>
+      </div>
+    </div>
+    <% } %>
+
+    <div style="margin-top: 1.5rem;">
+      <a href="${pageContext.request.contextPath}/" class="btn btn-outline">← Обратно към началото</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
+  </footer>
+</div>
+</body>
+</html>

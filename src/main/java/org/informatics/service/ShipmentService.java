@@ -143,4 +143,25 @@ public class ShipmentService {
     public List<Shipment> getUndeliveredShipments() {
         return repo.findUndelivered();
     }
+
+    public double calculateRevenueForPeriod(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Shipment> allShipments = repo.findAll();
+
+        return allShipments.stream()
+                .filter(s -> s.getRegistrationDate() != null)
+                .filter(s -> !s.getRegistrationDate().isBefore(startDate))
+                .filter(s -> !s.getRegistrationDate().isAfter(endDate))
+                .mapToDouble(Shipment::getPrice)
+                .sum();
+    }
+
+    public List<Shipment> getShipmentsForPeriod(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Shipment> allShipments = repo.findAll();
+
+        return allShipments.stream()
+                .filter(s -> s.getRegistrationDate() != null)
+                .filter(s -> !s.getRegistrationDate().isBefore(startDate))
+                .filter(s -> !s.getRegistrationDate().isAfter(endDate))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

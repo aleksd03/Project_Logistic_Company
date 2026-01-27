@@ -200,6 +200,7 @@
         <div style="margin-top: 1.5rem;">
             <a href="${pageContext.request.contextPath}/shipment-register" class="btn btn-success">➕ Регистрирай нова пратка</a>
             <a href="${pageContext.request.contextPath}/undelivered-shipments" class="btn" style="background: #ff9800; color: white; border: 2px solid #f57c00;">⚠️ Неполучени пратки</a>
+            <a href="${pageContext.request.contextPath}/revenue-report" class="btn" style="background: #28a745; color: white; border: 2px solid #1e7e34;">💰 Справка за приходи</a>
             <a href="${pageContext.request.contextPath}/" class="btn btn-outline">← Обратно към началото</a>
         </div>
     </main>

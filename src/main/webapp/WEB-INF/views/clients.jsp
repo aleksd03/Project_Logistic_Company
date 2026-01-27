@@ -67,6 +67,7 @@
                         <th>Имейл</th>
                         <th>Компания</th>
                         <th>Дата на регистрация</th>
+                        <th>Действия</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -81,6 +82,7 @@
                         </td>
                         <td><%= c.getUser() != null ? c.getUser().getEmail() : "N/A" %></td>
                         <td><%= c.getCompany() != null ? c.getCompany().getName() : "Без компания" %></td>
+                        <td><%= c.getUser() != null ? c.getUser().getCreatedAt().toString().substring(0, 16).replace("T", " ") : "N/A" %></td>
                         <td>
                             <div class="action-buttons">
                                 <button onclick="openEditModal(<%= c.getId() %>, <%= c.getCompany() != null ? c.getCompany().getId() : "null" %>)"
@@ -103,7 +105,7 @@
                     <% } %>
                     <% } else { %>
                     <tr>
-                        <td colspan="5" class="text-center">Няма регистрирани клиенти.</td>
+                        <td colspan="6" class="text-center">Няма регистрирани клиенти.</td>
                     </tr>
                     <% } %>
                     </tbody>
