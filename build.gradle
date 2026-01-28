@@ -49,3 +49,13 @@ tasks.withType(JavaCompile).configureEach {
 war {
     archiveFileName = 'Project_Logistic_Company.war'
 }
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+}
+
+test {
+    useJUnitPlatform()
+}
