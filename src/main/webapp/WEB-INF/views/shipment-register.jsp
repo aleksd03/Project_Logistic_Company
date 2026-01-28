@@ -3,34 +3,47 @@
 <%@ page import="org.informatics.entity.Client" %>
 <%@ page import="org.informatics.entity.Office" %>
 <%@ page import="org.informatics.entity.enums.Role" %>
+
 <%
+  // ===== Logged-in employee data from session =====
   String userEmail = (String) session.getAttribute("userEmail");
   String firstName = (String) session.getAttribute("firstName");
   String lastName = (String) session.getAttribute("lastName");
   Role userRole = (Role) session.getAttribute("userRole");
 
-  List<Client> clients = (List<Client>) request.getAttribute("clients");
-  List<Office> offices = (List<Office>) request.getAttribute("offices");
-  String error = (String) request.getAttribute("error");
+  // ===== Data provided by the servlet =====
+  List<Client> clients = (List<Client>) request.getAttribute("clients");   // all clients (senders/receivers)
+  List<Office> offices = (List<Office>) request.getAttribute("offices");   // available delivery offices
+  String error = (String) request.getAttribute("error");                   // validation error message
 %>
+
 <!DOCTYPE html>
 <html lang="bg">
 <head>
+  <!-- Page metadata -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Регистриране на пратка - ALVAS Logistics</title>
+
+  <!-- Global stylesheet -->
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
 <body>
 <div class="container">
+
+  <!-- ================= HEADER ================= -->
   <header>
     <div class="header-content">
+      <!-- Logo / home link -->
       <a href="${pageContext.request.contextPath}/" class="logo">ALVAS Logistics</a>
+
+      <!-- Navigation -->
       <nav>
         <ul>
           <li><a href="${pageContext.request.contextPath}/">Начало</a></li>
           <li><a href="${pageContext.request.contextPath}/employee-shipments">Пратки</a></li>
           <li>
+            <!-- Logged-in employee info -->
             <div class="user-info">
               👤 <%= firstName + " " + lastName %>
               <span class="user-role">СЛУЖИТЕЛ</span>
@@ -42,23 +55,30 @@
     </div>
   </header>
 
+  <!-- ================= MAIN CONTENT ================= -->
   <main>
     <div class="page-header">
       <h1>➕ Регистриране на нова пратка</h1>
       <p>Попълнете формата за да регистрирате нова пратка в системата</p>
     </div>
 
+    <!-- Error message from backend validation -->
     <% if (error != null) { %>
     <div class="alert alert-error"><%= error %></div>
     <% } %>
 
     <div class="card">
+      <!-- Shipment registration form -->
       <form method="post" action="${pageContext.request.contextPath}/shipment-register">
+
+        <!-- Sender & receiver selection -->
         <div class="form-grid">
           <div>
             <label for="senderId">Подател *</label>
             <select id="senderId" name="senderId" required>
               <option value="">Избери подател</option>
+
+              <!-- Populate senders from clients list -->
               <% if (clients != null) {
                 for (Client client : clients) { %>
               <option value="<%= client.getId() %>">
@@ -74,6 +94,8 @@
             <label for="receiverId">Получател *</label>
             <select id="receiverId" name="receiverId" required>
               <option value="">Избери получател</option>
+
+              <!-- Populate receivers from same clients list -->
               <% if (clients != null) {
                 for (Client client : clients) { %>
               <option value="<%= client.getId() %>">
@@ -86,9 +108,17 @@
           </div>
         </div>
 
+        <!-- Shipment weight -->
         <label for="weight">Тегло (кг) *</label>
-        <input type="number" id="weight" name="weight" step="0.01" min="0.01" required placeholder="0.00">
+        <input type="number"
+               id="weight"
+               name="weight"
+               step="0.01"
+               min="0.01"
+               required
+               placeholder="0.00">
 
+        <!-- Delivery type -->
         <label for="deliveryType">Тип доставка *</label>
         <select id="deliveryType" name="deliveryType" required>
           <option value="">Избери тип доставка</option>
@@ -96,10 +126,12 @@
           <option value="address">Доставка до адрес</option>
         </select>
 
+        <!-- Office delivery (shown only if selected) -->
         <div id="officeField" style="display: none;">
           <label for="officeId">Офис за доставка *</label>
           <select id="officeId" name="officeId">
             <option value="">Избери офис</option>
+
             <% if (offices != null) {
               for (Office office : offices) { %>
             <option value="<%= office.getId() %>">
@@ -113,12 +145,16 @@
           </select>
         </div>
 
+        <!-- Address delivery (shown only if selected) -->
         <div id="addressField" style="display: none;">
           <label for="deliveryAddress">Адрес за доставка *</label>
-          <input type="text" id="deliveryAddress" name="deliveryAddress"
+          <input type="text"
+                 id="deliveryAddress"
+                 name="deliveryAddress"
                  placeholder="гр. София, ул. Витоша 15">
         </div>
 
+        <!-- Pricing information -->
         <div class="info-box">
           <strong>💡 Автоматично изчисляване на цена:</strong>
           <ul>
@@ -129,25 +165,32 @@
           </ul>
         </div>
 
+        <!-- Form actions -->
         <div class="form-actions">
-          <a href="${pageContext.request.contextPath}/employee-shipments" class="btn btn-outline">Откажи</a>
-          <button type="submit" class="btn btn-success">Регистрирай пратка</button>
+          <a href="${pageContext.request.contextPath}/employee-shipments"
+             class="btn btn-outline">Откажи</a>
+          <button type="submit" class="btn btn-success">
+            Регистрирай пратка
+          </button>
         </div>
+
       </form>
     </div>
   </main>
 
+  <!-- ================= FOOTER ================= -->
   <footer>
     <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
   </footer>
 </div>
 
 <script>
-  // Валидация - подател и получател да са различни
+  // ===== Client-side validation =====
   document.querySelector('form').addEventListener('submit', function(e) {
     const senderId = document.getElementById('senderId').value;
     const receiverId = document.getElementById('receiverId').value;
 
+    // Sender and receiver must be different
     if (senderId === receiverId) {
       e.preventDefault();
       alert('Подателят и получателят не могат да бъдат едно и също лице!');
@@ -155,14 +198,18 @@
     }
 
     const deliveryType = document.getElementById('deliveryType').value;
+
+    // Office delivery requires office selection
     if (deliveryType === 'office') {
-      const officeId = document.getElementById('officeId').value;
-      if (!officeId) {
+      if (!document.getElementById('officeId').value) {
         e.preventDefault();
         alert('Моля изберете офис за доставка!');
         return;
       }
-    } else if (deliveryType === 'address') {
+    }
+
+    // Address delivery requires address input
+    if (deliveryType === 'address') {
       const address = document.getElementById('deliveryAddress').value;
       if (!address || address.trim() === '') {
         e.preventDefault();
@@ -172,7 +219,7 @@
     }
   });
 
-  // Show/hide fields based on delivery type
+  // ===== Toggle delivery fields dynamically =====
   document.getElementById('deliveryType').addEventListener('change', function() {
     const officeField = document.getElementById('officeField');
     const addressField = document.getElementById('addressField');
