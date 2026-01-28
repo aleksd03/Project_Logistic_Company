@@ -7,9 +7,11 @@
     <title>Вход - ALVAS Logistics</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
+
 <body>
 <div class="container">
-    <!-- Header -->
+
+    <!-- HEADER / NAVIGATION -->
     <header>
         <div class="header-content">
             <a href="${pageContext.request.contextPath}/" class="logo">
@@ -26,20 +28,28 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- MAIN CONTENT -->
     <main class="fade-in">
+
+        <!-- LOGIN FORM CONTAINER -->
         <div class="auth-form-container">
             <h2>Вход в системата</h2>
             <p>Добре дошли обратно! Моля влезте във вашия акаунт.</p>
 
-            <% String error = (String) request.getAttribute("error");
-                if (error != null) { %>
+            <%-- Display login error message if authentication fails --%>
+            <% 
+                String error = (String) request.getAttribute("error");
+                if (error != null) { 
+            %>
             <div class="alert alert-error">
                 ⚠️ <%= error %>
             </div>
             <% } %>
 
+            <!-- LOGIN FORM -->
             <form method="post" action="${pageContext.request.contextPath}/login">
+
+                <!-- EMAIL INPUT -->
                 <label for="email">
                     Email адрес
                     <input
@@ -51,6 +61,7 @@
                             autofocus>
                 </label>
 
+                <!-- PASSWORD INPUT -->
                 <label for="password">
                     Парола
                     <input
@@ -61,11 +72,13 @@
                             required>
                 </label>
 
+                <!-- SUBMIT BUTTON -->
                 <button type="submit" class="btn-primary">
                     Влез в системата
                 </button>
             </form>
 
+            <!-- REGISTRATION LINK -->
             <div class="text-center">
                 <p>Нямате акаунт?</p>
                 <a href="${pageContext.request.contextPath}/register" class="btn-outline">
@@ -78,6 +91,8 @@
     <footer>
         <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
     </footer>
+
 </div>
 </body>
 </html>
+
