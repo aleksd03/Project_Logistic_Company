@@ -3,12 +3,15 @@
 <%@ page import="org.informatics.entity.Shipment" %>
 <%@ page import="org.informatics.entity.enums.Role" %>
 <%@ page import="org.informatics.entity.enums.ShipmentStatus" %>
+
 <%
+  // User session information
   String userEmail = (String) session.getAttribute("userEmail");
   String firstName = (String) session.getAttribute("firstName");
   String lastName = (String) session.getAttribute("lastName");
   Role userRole = (Role) session.getAttribute("userRole");
 
+  // Monthly statistics passed from the servlet
   String currentMonth = (String) request.getAttribute("currentMonth");
   Integer currentYear = (Integer) request.getAttribute("currentYear");
   Integer totalShipments = (Integer) request.getAttribute("totalShipments");
@@ -19,6 +22,7 @@
   Integer totalClients = (Integer) request.getAttribute("totalClients");
   List<Shipment> shipments = (List<Shipment>) request.getAttribute("shipments");
 
+  // Translate month enum value to Bulgarian
   String monthBG = currentMonth;
   switch(currentMonth) {
     case "JANUARY": monthBG = "Януари"; break;
@@ -35,6 +39,7 @@
     case "DECEMBER": monthBG = "Декември"; break;
   }
 %>
+
 <!DOCTYPE html>
 <html lang="bg">
 <head>
@@ -43,8 +48,11 @@
   <title>Месечна статистика - ALVAS Logistics</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
+
 <body>
 <div class="container">
+
+  <!-- HEADER / NAVIGATION -->
   <header>
     <div class="header-content">
       <a href="${pageContext.request.contextPath}/" class="logo">ALVAS Logistics</a>
@@ -65,25 +73,31 @@
   </header>
 
   <main>
+
+    <!-- PAGE HEADER -->
     <div class="page-header">
       <h1>📊 Месечна статистика</h1>
       <p>Преглед на статистиката за <%= monthBG %> <%= currentYear %></p>
     </div>
 
-    <!-- MAIN STATS -->
+    <!-- MAIN SHIPMENT STATISTICS -->
     <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+
+      <!-- Total shipments -->
       <div class="stat-card blue">
         <div class="stat-card-icon">📦</div>
         <div class="stat-card-value blue"><%= totalShipments != null ? totalShipments : 0 %></div>
         <div class="stat-card-label">Общо пратки този месец</div>
       </div>
 
+      <!-- Shipments currently in delivery -->
       <div class="stat-card orange">
         <div class="stat-card-icon">🚚</div>
         <div class="stat-card-value orange"><%= sentShipments != null ? sentShipments : 0 %></div>
         <div class="stat-card-label">В процес на доставка</div>
       </div>
 
+      <!-- Delivered shipments -->
       <div class="stat-card green">
         <div class="stat-card-icon">✅</div>
         <div class="stat-card-value green"><%= receivedShipments != null ? receivedShipments : 0 %></div>
@@ -91,8 +105,10 @@
       </div>
     </div>
 
-    <!-- FINANCIAL STATS -->
+    <!-- FINANCIAL STATISTICS -->
     <div class="quick-stats-grid" style="margin-bottom: 2rem;">
+
+      <!-- Revenue information -->
       <div class="quick-stat-card">
         <h3 class="quick-stat-header">
           <span>💰</span> Финансови показатели
@@ -109,6 +125,7 @@
         </div>
       </div>
 
+      <!-- Efficiency indicators -->
       <div class="quick-stat-card">
         <h3 class="quick-stat-header">
           <span>📈</span> Ефективност
@@ -116,6 +133,7 @@
         <div class="quick-stat-content">
           <div class="quick-stat-item">
             <div class="quick-stat-value purple">
+              <%-- Percentage of delivered shipments --%>
               <% if (totalShipments != null && totalShipments > 0 && receivedShipments != null) { %>
               <%= String.format("%.1f", (receivedShipments * 100.0 / totalShipments)) %>%
               <% } else { %>
@@ -132,9 +150,10 @@
       </div>
     </div>
 
-    <!-- SHIPMENTS TABLE -->
+    <!-- SHIPMENTS TABLE FOR THE MONTH -->
     <% if (shipments != null && !shipments.isEmpty()) { %>
     <div class="card">
+
       <div style="padding: 0.75rem 1rem; border-bottom: 2px solid #e0e0e0; background: #f8f9fa;">
         <strong style="color: #333;">📋 Пратки за <%= monthBG %> <%= currentYear %></strong>
       </div>
@@ -153,6 +172,8 @@
           </tr>
           </thead>
           <tbody>
+
+          <%-- Iterate through all shipments for the selected month --%>
           <% for (Shipment s : shipments) { %>
           <tr>
             <td><%= s.getId() %></td>
@@ -178,27 +199,36 @@
             <td><%= s.getRegistrationDate().toString().substring(0, 16).replace("T", " ") %></td>
           </tr>
           <% } %>
+
           </tbody>
         </table>
       </div>
     </div>
+
     <% } else { %>
+
+    <!-- MESSAGE WHEN THERE ARE NO SHIPMENTS FOR THE MONTH -->
     <div class="card">
       <div style="padding: 2rem; text-align: center; color: #666;">
         <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">📭 Няма пратки за този месец</p>
       </div>
     </div>
+
     <% } %>
 
+    <!-- NAVIGATION BUTTONS -->
     <div style="margin-top: 1.5rem;">
       <a href="${pageContext.request.contextPath}/reports" class="btn btn-primary">← Обратно към справки</a>
       <a href="${pageContext.request.contextPath}/" class="btn btn-outline">← Обратно към началото</a>
     </div>
+
   </main>
 
+  <!-- FOOTER -->
   <footer>
     <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
   </footer>
+
 </div>
 </body>
 </html>
