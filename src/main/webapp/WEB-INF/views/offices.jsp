@@ -3,17 +3,23 @@
 <%@ page import="org.informatics.entity.Office" %>
 <%@ page import="org.informatics.entity.Company" %>
 <%@ page import="org.informatics.entity.enums.Role" %>
+
 <%
+    // Logged-in user session data
     String userEmail = (String) session.getAttribute("userEmail");
     String firstName = (String) session.getAttribute("firstName");
     String lastName = (String) session.getAttribute("lastName");
     Role userRole = (Role) session.getAttribute("userRole");
 
+    // Data provided by OfficesServlet
     List<Office> offices = (List<Office>) request.getAttribute("offices");
     List<Company> companies = (List<Company>) request.getAttribute("companies");
+
+    // Optional feedback messages
     String success = request.getParameter("success");
     String error = request.getParameter("error");
 %>
+
 <!DOCTYPE html>
 <html lang="bg">
 <head>
@@ -22,8 +28,11 @@
     <title>Офиси - ALVAS Logistics</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
+
 <body>
 <div class="container">
+
+    <!-- HEADER / NAVIGATION -->
     <header>
         <div class="header-content">
             <a href="${pageContext.request.contextPath}/" class="logo">ALVAS Logistics</a>
@@ -44,19 +53,24 @@
     </header>
 
     <main>
+
+        <!-- PAGE HEADER + CREATE BUTTON -->
         <div class="page-header">
             <h1>🏛️ Управление на офиси</h1>
             <button onclick="openCreateModal()" class="btn btn-primary">➕ Добави офис</button>
         </div>
 
+        <!-- SUCCESS MESSAGE -->
         <% if (success != null) { %>
         <div class="alert alert-success"><%= success %></div>
         <% } %>
 
+        <!-- ERROR MESSAGE -->
         <% if (error != null) { %>
         <div class="alert alert-error"><%= error %></div>
         <% } %>
 
+        <!-- OFFICES TABLE -->
         <div class="card">
             <div class="table-container">
                 <table>
@@ -69,6 +83,8 @@
                     </tr>
                     </thead>
                     <tbody>
+
+                    <%-- Show offices if available --%>
                     <% if (offices != null && !offices.isEmpty()) { %>
                     <% for (Office o : offices) { %>
                     <tr>
@@ -77,11 +93,14 @@
                         <td><%= o.getCompany() != null ? o.getCompany().getName() : "N/A" %></td>
                         <td>
                             <div class="action-buttons">
+
+                                <!-- EDIT OFFICE -->
                                 <button onclick="openEditModal(<%= o.getId() %>, '<%= o.getAddress().replace("'", "\\'") %>', <%= o.getCompany() != null ? o.getCompany().getId() : "null" %>)"
                                         class="btn btn-primary">
                                     🖊️ Редактирай
                                 </button>
 
+                                <!-- DELETE OFFICE -->
                                 <form action="${pageContext.request.contextPath}/offices"
                                       method="get"
                                       onsubmit="return confirm('Сигурни ли сте, че искате да изтриете офиса на адрес: <%= o.getAddress().replace("'", "\\'") %>?');">
@@ -96,33 +115,42 @@
                     </tr>
                     <% } %>
                     <% } else { %>
+
+                    <!-- NO OFFICES MESSAGE -->
                     <tr>
                         <td colspan="4" class="text-center">Няма добавени офиси.</td>
                     </tr>
+
                     <% } %>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- BACK BUTTON -->
         <a href="${pageContext.request.contextPath}/" class="btn btn-outline">← Обратно към началото</a>
     </main>
 
+    <!-- FOOTER -->
     <footer>
         <p>&copy; 2025 ALVAS Logistics. Всички права запазени.</p>
     </footer>
 </div>
 
+<!-- CREATE / EDIT OFFICE MODAL -->
 <div id="officeModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2 id="modalTitle">Добави офис</h2>
+
         <form method="post" action="${pageContext.request.contextPath}/offices">
             <input type="hidden" id="officeId" name="id">
 
+            <!-- Office address -->
             <label for="officeAddress">Адрес *</label>
             <input type="text" id="officeAddress" name="address" required placeholder="гр. София, ул. Витоша 15">
 
+            <!-- Company selection -->
             <label for="officeCompany">Компания *</label>
             <select id="officeCompany" name="companyId" required>
                 <option value="">Избери компания</option>
@@ -142,6 +170,7 @@
 </div>
 
 <script>
+    // Open modal for creating a new office
     function openCreateModal() {
         document.getElementById('modalTitle').textContent = 'Добави офис';
         document.getElementById('officeId').value = '';
@@ -150,6 +179,7 @@
         document.getElementById('officeModal').style.display = 'block';
     }
 
+    // Open modal for editing an existing office
     function openEditModal(id, address, companyId) {
         document.getElementById('modalTitle').textContent = 'Редактирай офис';
         document.getElementById('officeId').value = id;
@@ -158,16 +188,12 @@
         document.getElementById('officeModal').style.display = 'block';
     }
 
+    // Close modal window
     function closeModal() {
         document.getElementById('officeModal').style.display = 'none';
     }
 
-    function confirmDelete(id, address) {
-        if (confirm('Сигурни ли сте, че искате да изтриете офис "' + address + '"?')) {
-            window.location.href = '${pageContext.request.contextPath}/offices?action=delete&id=' + id;
-        }
-    }
-
+    // Close modal when clicking outside it
     window.onclick = function(event) {
         const modal = document.getElementById('officeModal');
         if (event.target == modal) {
@@ -175,5 +201,6 @@
         }
     }
 </script>
+
 </body>
 </html>
