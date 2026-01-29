@@ -5,6 +5,7 @@ import org.informatics.entity.Employee;
 import org.informatics.entity.Company;
 import org.informatics.entity.Office;
 import org.informatics.entity.User;
+import org.informatics.entity.enums.EmployeeType;
 
 import java.util.List;
 
@@ -98,5 +99,28 @@ public class EmployeeService {
                     e
             );
         }
+    }
+
+    /**
+     * Create new employee (for testing purposes)
+     * @param user User entity
+     * @param employeeType Type of employee
+     * @return Created Employee
+     */
+    public Employee createEmployee(User user, EmployeeType employeeType) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if (employeeType == null) {
+            throw new IllegalArgumentException("Employee type cannot be null");
+        }
+
+        Employee employee = new Employee();
+        employee.setUser(user);
+        employee.setEmployeeType(employeeType);
+        employee.setCompany(null);
+        employee.setOffice(null);
+
+        return repo.save(employee);
     }
 }
